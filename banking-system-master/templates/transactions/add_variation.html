@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Variation</title>
+    <style>
+        /* Basic Reset */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        /* Modal Background */
+        
+        .modal-background {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            /* Darker semi-transparent background */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        /* Modal Content */
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            width: 60%;
+            /* Adjust width to make modal larger */
+            max-width: 800px;
+            /* Set a max-width to prevent it from being too large on big screens */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        /* Modal Header */
+        
+        .modal-header {
+            font-size: 1.75em;
+            margin-bottom: 20px;
+            color: black;
+        }
+        /* Form Styles */
+        
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            margin-bottom: 8px;
+            color: black;
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        input[type="number"] {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            color: black;
+            width: 100%;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        input[type="checkbox"] {
+            margin-right: 10px;
+            /* Space between checkbox and label */
+        }
+        
+        button {
+            padding: 12px;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        
+        button:hover {
+            background-color: #333;
+        }
+        /* Close Button */
+        
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: black;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Modal Structure -->
+    <div class="modal-background" id="modal">
+        <div class="modal-content">
+            <button class="close-button" id="close-button">&times;</button>
+            <div class="modal-header">Add Variation for {{ sanction_record.id }}</div>
+            <form method="post">
+                {% csrf_token %}
+                <label for="variation">Variation:</label>
+                <input type="text" id="variation" name="variation" required><br>
+                <label for="score">Score:</label>
+                <input type="number" id="score" name="score" required><br>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="is_active" name="is_active" value="enabled">
+                    <label for="is_active">Active</label>
+                </div>
+                <button type="submit">Add Variation</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to handle modal open and close
+        document.getElementById('close-button').addEventListener('click', function() {
+            document.getElementById('modal').style.display = 'none';
+        });
+
+        // Function to show the modal
+        function showModal() {
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        // Example trigger to open the modal, you can customize this as needed
+        window.onload = function() {
+            showModal(); // Show the modal on page load for demonstration
+        }
+    </script>
+
+</body>
+
+</html>

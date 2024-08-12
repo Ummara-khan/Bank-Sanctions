@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanctions Management System</title>
+    <!-- Include Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Include Tailwind CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .dropdown-menu {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <nav class="flex items-center justify-between flex-wrap bg-gray-800 p-6">
+        <div class="flex items-center flex-shrink-0 text-white mr-6">
+            <a href="/" class="text-white">
+                <i class="fas fa-home text-xl"></i>
+            </a>
+        </div>
+        <div class="block lg:hidden">
+            <button class="flex items-center px-3 py-2 border rounded text-white border-white-400 hover:text-white hover:border-white">
+                <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <title>Menu</title>
+                    <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+                </svg>
+            </button>
+        </div>
+        <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
+            {% if request.user.is_authenticated %}
+            <div class="text-md lg:flex-grow">
+                <a href="{% url 'transactions:list_management' %}" class="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-white mr-4">
+                    Performance Results
+                </a>
+                <a href="{% url 'transactions:list_management' %}" class="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-white mr-4">
+                    Generate Test Data
+                </a>
+                <div class="relative inline-block text-left dropdown">
+                    <button id="dropdown-button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-gray-800 text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                        Watch List Manager
+                        <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M5.293 9.293a1 1 0 011.414 0L10 12.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div id="dropdown-menu" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none dropdown-menu" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                        <div class="py-1" role="none">
+                            <a href="{% url 'transactions:list_management' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">List Management</a>
+                            <a href="{% url 'transactions:records_variations' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">List Management</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <a href="{% url 'accounts:user_logout' %}" class="inline-block font-medium text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-800 hover:bg-white mt-4 lg:mt-0">Logout</a>
+            </div>
+            {% else %}
+            <div class="text-md lg:flex-grow"></div>
+            <div>
+                <a href="{% url 'accounts:user_login' %}" class="mr-2 inline-block font-medium text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-800 hover:bg-white mt-4 lg:mt-0">Login</a>
+            </div>
+            <div>
+                <a href="{% url 'accounts:user_registration' %}" class="inline-block font-medium text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-800 hover:bg-white mt-4 lg:mt-0">Register</a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="container mx-auto p-6 flex">
+        <!-- Sidebar -->
+        <aside class="w-1/4 bg-white p-4 shadow-md">
+            <h1 class="text-xl font-semibold mb-4">Records & Variations</h1>
+            <div class="records-summary mb-6">
+                <h4 class="text-medium font-semibold mb-2">List Name:</h4>
+                <div class="space-y-2">
+                    {% for item in list_summary %}
+                    <a href="?list_name={{ item.list_name }}" class="block bg-gray-200 text-gray-800 p-4 rounded-lg text-center hover:bg-gray-300 transition">
+                        {{ item.list_name }}: {{ item.total_records }}
+                    </a> {% endfor %}
+                </div>
+            </div>
+        </aside>
+        <!-- Main content -->
+        <div class="w-3/4 ml-6 bg-white p-4 shadow-md">
+            <!-- Search form -->
+            <form method="GET" action="{% url 'transactions:records_variations' %}" class="mb-6">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="watch_list_id" class="block text-sm font-medium text-gray-700">Watch List ID</label>
+                        <input type="text" id="watch_list_id" name="watch_list_id" value="{{ watch_list_id }}" class="border p-3 rounded-lg w-full">
+                    </div>
+                    <div>
+                        <label for="id_original" class="block text-sm font-medium text-gray-700">ID Original</label>
+                        <input type="text" id="id_original" name="id_original" value="{{ id_original }}" class="border p-3 rounded-lg w-full">
+                    </div>
+                    <div>
+                        <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
+                        <input type="text" id="first_name" name="first_name" value="{{ first_name }}" class="border p-3 rounded-lg w-full">
+                    </div>
+                    <div>
+                        <label for="last_name" class="block text-sm font-medium text-gray-700">Last Name</label>
+                        <input type="text" id="last_name" name="last_name" value="{{ last_name }}" class="border p-3 rounded-lg w-full">
+                    </div>
+                </div>
+                <div class="flex justify-end mt-4">
+                    <button type="submit" class="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg text-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                      Search
+                    </button>
+                </div>
+
+            </form>
+
+
+
+            <!-- Table to display records -->
+            <table class="min-w-full bg-white border border-gray-200 mt-6">
+                <thead>
+                    <tr class="bg-gray-800 text-white">
+                        <th class="border-b px-4 py-2 text-left">ID Original</th>
+                        <th class="border-b px-4 py-2 text-left">Name</th>
+                        <th class="border-b px-4 py-2 text-left">Entity Type</th>
+                        <th class="border-b px-4 py-2 text-center">No. of Variations</th>
+                        <th class="border-b px-4 py-2 text-left">Created Date</th>
+                        <th class="border-b px-4 py-2 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in sanction_records %}
+                    <tr class="hover:bg-gray-100">
+                        <td class="border-b px-4 py-2 text-left">{{ record.id_original }}</td>
+                        <td class="border-b px-4 py-2 text-left">{{ record.first_name }} {{ record.last_name }}</td>
+                        <td class="border-b px-4 py-2 text-left">{{ record.entity_type }}</td>
+                        <td class="border-b px-4 py-2 text-center">{{ record.variation_count }}</td>
+                        <td class="border-b px-4 py-2 text-left">{{ record.created_date }}</td>
+                        <td class="border-b px-4 py-2 text-left">
+                            <a href="{% url 'transactions:view_record' record.id %}" class="text-blue-500 hover:text-blue-700">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+
+
+            <!-- Pagination controls -->
+            <div class="mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="flex justify-between">
+                        {% if page_obj.has_previous %}
+                        <li>
+                            <a href="?page=1" class="bg-blue-500 text-white px-4 py-2 rounded-l">First</a>
+                        </li>
+                        <li>
+                            <a href="?page={{ page_obj.previous_page_number }}" class="bg-black text-white px-4 py-2">Previous</a>
+                        </li>
+                        {% endif %}
+
+                        <!-- Display current page number and total pages -->
+                        <li class="px-4 py-2">
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                        </li>
+
+                        {% if page_obj.has_next %}
+                        <li>
+                            <a href="?page={{ page_obj.next_page_number }}" class="bg-black text-white px-4 py-2">Next</a>
+                        </li>
+                        <li>
+                            <a href="?page={{ page_obj.paginator.num_pages }}" class="bg-black text-white px-4 py-2 rounded-r">Last</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+
+
+
+            <!-- Include AlpineJS for dropdown functionality -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/2.8.0/alpine.js" integrity="sha512-fesPJL9/M3DNNk61HeYFkpgS/W3w5bovEN97Xz5Mtrih+8Wv/TN5QEpZEBZqP/tC1LzJjS1v4/MLA8O+ZGOwtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownButton = document.getElementById('dropdown-button');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+
+            dropdownButton.addEventListener('click', function() {
+                dropdownMenu.classList.toggle('show');
+            });
+        });
+    </script>
+    </body>
+
+</html>

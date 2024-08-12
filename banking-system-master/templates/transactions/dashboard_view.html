@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanctions Management System</title>
+    <!-- Include Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Include Tailwind CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .dropdown-menu {
+            display: none;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <nav class="flex items-center justify-between flex-wrap bg-gray-800 p-6">
+        <div class="flex items-center flex-shrink-0 text-white mr-6">
+            <a href="/" class="text-white">
+                <i class="fas fa-home text-xl"></i>
+            </a>
+        </div>
+        <div class="block lg:hidden">
+            <button class="flex items-center px-3 py-2 border rounded text-white border-white-400 hover:text-white hover:border-white">
+                <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <title>Menu</title>
+                    <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+                </svg>
+            </button>
+        </div>
+        <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
+            {% if request.user.is_authenticated %}
+            <div class="text-md lg:flex-grow">
+                <a href="{% url 'transactions:list_management' %}" class="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-white mr-4">
+                    Performance Results
+                </a>
+                <a href="{% url 'transactions:list_management' %}" class="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-white mr-4">
+                    Generate Test Data
+                </a>
+                <div class="relative inline-block text-left">
+                    <button id="dropdown-button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-gray-800 text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                        Watch List Manager
+                        <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M5.293 9.293a1 1 0 011.414 0L10 12.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div id="dropdown-menu" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none dropdown-menu" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                        <div class="py-1" role="none">
+                            <a href="{% url 'transactions:list_management' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">List Management</a>
+                            <a href="{% url 'transactions:records_variations' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Name Variations</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <a href="{% url 'accounts:user_logout' %}" class="inline-block font-medium text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-800 hover:bg-white mt-4 lg:mt-0">Logout</a>
+            </div>
+            {% else %}
+            <div class="text-md lg:flex-grow"></div>
+            <div>
+                <a href="{% url 'accounts:user_login' %}" class="mr-2 inline-block font-medium text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-800 hover:bg-white mt-4 lg:mt-0">Login</a>
+            </div>
+            <div>
+                <a href="{% url 'accounts:user_registration' %}" class="inline-block font-medium text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-800 hover:bg-white mt-4 lg:mt-0">Register</a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Include AlpineJS for dropdown functionality -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/2.8.0/alpine.js" integrity="sha512-fesPJL9/M3DNNk61HeYFkpgS/W3w5bovEN97Xz5Mtrih+8Wv/TN5QEpZEBZqP/tC1LzJjS1v4/MLA8O+ZGOwtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownButton = document.getElementById('dropdown-button');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+
+            dropdownButton.addEventListener('click', function() {
+                dropdownMenu.classList.toggle('show');
+            });
+
+            // Close dropdown menu when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                    dropdownMenu.classList.remove('show');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
+
+
+</html>
+    <title>Dashboard Analytics</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tiles {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .tile {
+            flex: 1;
+            min-width: 250px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 0 10px;
+        }
+
+        .tile h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .tile p {
+            margin: 5px 0;
+            font-size: 18px;
+            color: #666;
+        }
+
+        main {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .chart-container {
+            flex: 1 1 calc(50% - 40px);
+            min-width: 300px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <header>
+            <h1>Analytics Dashboard</h1>
+        </header>
+        <div class="tiles">
+            <div class="tile">
+                <h2>Total Records</h2>
+                <p>{{ total_records }}</p>
+            </div>
+            <div class="tile">
+                <h2>Name Variations</h2>
+                <p>{{ total_variations }}</p>
+            </div>
+           
+        </div>
+        <main>
+            <div class="chart-container">
+                <canvas id="barChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="lineChart"></canvas>
+            </div>
+        </main>
+        <footer>
+            <p>Dashboard © 2024</p>
+        </footer>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Get data from Django context
+                const chartData = JSON.parse('{{ chart_data|escapejs }}');
+        
+                // Bar Chart - Metric Performance in Test Cases
+                var ctx1 = document.getElementById('barChart').getContext('2d');
+                new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [{
+                            label: 'Number of Variations by Score',
+                            data: chartData.metric_performance_data,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+        
+                // Line Chart - Scores in Name Variations (unchanged from previous example)
+                var ctx2 = document.getElementById('lineChart').getContext('2d');
+                new Chart(ctx2, {
+                    type: 'line',
+                    data: {
+                        labels: chartData.name_variations_labels,
+                        datasets: [{
+                            label: 'Scores',
+                            data: chartData.name_variations_data,
+                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+        </body>
+        </html>
+        

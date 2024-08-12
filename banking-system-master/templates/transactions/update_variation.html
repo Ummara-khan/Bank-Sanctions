@@ -1,0 +1,13 @@
+<form method="post" action="{% url 'transactions:do_update_variation' variation.variation_id %}">
+    {% csrf_token %}
+    <label for="variation">Variation:</label>
+    <input type="text" id="variation" name="variation" value="{{ variation.variation }}" required>
+
+    <label for="score">Score:</label>
+    <input type="text" id="score" name="score" value="{{ variation.score }}" required>
+
+    <label for="is_active">Active:</label>
+    <input type="checkbox" id="is_active" name="is_active" {% if variation.is_active %}checked{% endif %}>
+
+    <button type="submit">Save Changes</button>
+</form>

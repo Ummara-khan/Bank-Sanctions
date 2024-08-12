@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Disable Variation</title>
+</head>
+<body>
+    <h1>Disable Variation</h1>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="variation_id" value="{{ variation_id }}">
+        <button type="submit">Disable Variation</button>
+    </form>
+</body>
+</html>

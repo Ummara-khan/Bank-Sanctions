@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanctions Management System</title>
+    <!-- Include Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Include Tailwind CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .dropdown-menu {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 flex flex-col h-screen">
+    <!-- Top Navigation Bar -->
+    <nav class="flex items-center justify-between flex-wrap bg-gray-800 p-6">
+        <div class="flex items-center flex-shrink-0 text-white mr-6">
+            <a href="/" class="text-white">
+                <i class="fas fa-home text-xl"></i>
+            </a>
+        </div>
+        <div class="block lg:hidden">
+            <button class="flex items-center px-3 py-2 border rounded text-white border-white-400 hover:text-white hover:border-white">
+                <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <title>Menu</title>
+                    <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+                </svg>
+            </button>
+        </div>
+        <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
+            {% if request.user.is_authenticated %}
+            <div class="text-md lg:flex-grow">
+                <a href="{% url 'transactions:list_management' %}" class="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-white mr-4">
+                    Performance Results
+                </a>
+                <a href="{% url 'transactions:view_variations' %}" class="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-white mr-4">
+                    Generate Test Data
+                </a>
+                <div class="relative inline-block text-left dropdown">
+                    <button id="dropdown-button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-gray-800 text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                        Watch List Manager
+                        <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M5.293 9.293a1 1 0 011.414 0L10 12.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div id="dropdown-menu" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none dropdown-menu" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                        <div class="py-1" role="none">
+                            <a href="{% url 'transactions:list_management' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">List Management</a>
+                            <a href="{% url 'transactions:records_variations' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Records & Variations</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <a href="{% url 'accounts:user_logout' %}" class="inline-block font-medium text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-800 hover:bg-white mt-4 lg:mt-0">Logout</a>
+            </div>
+            {% else %}
+            <div class="text-md lg:flex-grow"></div>
+            <div>
+                <a href="{% url 'accounts:user_login' %}" class="mr-2 inline-block font-medium text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-800 hover:bg-white mt-4 lg:mt-0">Login</a>
+            </div>
+            <div>
+                <a href="{% url 'accounts:user_registration' %}" class="inline-block font-medium text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-800 hover:bg-white mt-4 lg:mt-0">Register</a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <script>
+        document.getElementById('dropdown-button').addEventListener('click', function() {
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            dropdownMenu.style.display = dropdownMenu.style.display === 'none' || dropdownMenu.style.display === '' ? 'block' : 'none';
+        });
+
+        // Optional: Close the dropdown menu if clicking outside of it
+        window.addEventListener('click', function(e) {
+            const dropdownButton = document.getElementById('dropdown-button');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.style.display = 'none';
+            }
+        });
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .top-nav {
+            background-color: #003366;
+            /* Navy Blue Dark */
+            color: white;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #002244;
+        }
+        
+        .top-nav h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+        
+        .top-nav .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .top-nav .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .top-nav .nav-links a:hover {
+            text-decoration: underline;
+        }
+        /* Sidebar styling */
+        
+        .sidebar {
+            width: 20%;
+            background-color: #f4f4f4;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            /* Added gap between filter sections */
+        }
+        /* White background div inside the sidebar */
+        
+        .white-background {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .content {
+            width: 80%;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        
+        .filters {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            /* Added gap between items */
+        }
+        
+        .filters label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .filters select,
+        .filters input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .filters button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            font-size: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .filters button:hover {
+            background-color: #0056b3;
+        }
+        
+        .card {
+            background-color: #fff;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+        
+        .statistics {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            /* Adjusted margin for better spacing */
+            flex-wrap: wrap;
+            /* Allow items to wrap */
+            gap: 20px;
+            /* Added gap between statistics cards */
+        }
+        
+        .stat-card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 10px;
+            /* Adjusted margin for better spacing */
+            flex-grow: 1;
+            /* Allow cards to grow and fill space */
+            min-width: 200px;
+            /* Ensure cards don't get too small */
+        }
+        
+        .stat-card h2 {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .stat-card p {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 5px 0 0;
+            color: #007bff;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            /* Adjusted margin for better spacing */
+        }
+        
+        table th,
+        table td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        table th {
+            background-color: #f2f2f2;
+        }
+        
+        table tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .pagination button {
+            padding: 10px 15px;
+            font-size: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        
+        .pagination button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+
+
+    <div style="display: flex; flex: 1;">
+        <div class="sidebar">
+            <div class="white-background">
+                <h1>Filters</h1>
+                <div class="filters">
+                    <label for="hit-mode">Hit mode</label>
+                    <select id="hit-mode">
+                        <option value="">Select...</option>
+                        <option value="mode1">Mode 1</option>
+                        <option value="mode2">Mode 2</option>
+                    </select>
+
+                    <label for="test">Test</label>
+                    <select id="test">
+                        <option value="">Select...</option>
+                        <option value="test1">Test 1</option>
+                        <option value="test2">Test 2</option>
+                    </select>
+
+                    <label for="test-group">Test group</label>
+                    <select id="test-group">
+                        <option value="">Select...</option>
+                        <option value="group1">Group 1</option>
+                        <option value="group2">Group 2</option>
+                    </select>
+
+                    <label for="source-list">Source list</label>
+                    <select id="source-list">
+                        <option value="">Select...</option>
+                        <option value="list1">List 1</option>
+                        <option value="list2">List 2</option>
+                    </select>
+
+                    <label for="type">Type</label>
+                    <select id="type">
+                        <option value="">Select...</option>
+                        <option value="type1">Type 1</option>
+                        <option value="type2">Type 2</option>
+                    </select>
+
+                    <label for="field">Field</label>
+                    <select id="field">
+                        <option value="">Select...</option>
+                        <option value="field1">Field 1</option>
+                        <option value="field2">Field 2</option>
+                    </select>
+
+                    <label for="format">Format</label>
+                    <select id="format">
+                        <option value="">Select...</option>
+                        <option value="format1">Format 1</option>
+                        <option value="format2">Format 2</option>
+                    </select>
+
+                    <button>Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="statistics">
+                <div class="card">
+                    <h3>Original names</h3>
+                    <p>59</p>
+                </div>
+                <div class="card">
+                    <h3>Tests</h3>
+                    <p>9</p>
+                </div>
+                <div class="card">
+                    <h3>Tests groups</h3>
+                    <p>5</p>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Metrics</h3>
+                <p>Effectiveness: 87%</p>
+                <p>Efficiency: 5%</p>
+            </div>
+            <div class="card overall-results">
+                <h3>Overall results</h3>
+                <div class="chart">Chart</div>
+            </div>
+            <div class="card test-data-statistics">
+                <h3>Test data statistics</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>List name</th>
+                            <th><i class="fa fa-users"></i></th>
+                            <th><i class="fa fa-user-times"></i></th>
+                            <th><i class="fa fa-user-plus"></i></th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>EU List</td>
+                            <td>144</td>
+                            <td>5</td>
+                            <td>0</td>
+                            <td>149</td>
+                        </tr>
+                        <tr>
+                            <td>OFAC SDN</td>
+                            <td>140</td>
+                            <td>10</td>
+                            <td>98</td>
+                            <td>248</td>
+                        </tr>
+                        <tr>
+                            <td>UN List</td>
+                            <td>150</td>
+                            <td>4</td>
+                            <td>0</td>
+                            <td>154</td>
+                        </tr>
+                        <tr>
+                            <td>Grand Total</td>
+                            <td>434</td>
+                            <td>19</td>
+                            <td>98</td>
+                            <td>551</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card effectiveness-per-test">
+                <h3>Effectiveness per test</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Test name</th>
+                            <th>Test group</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Second Name First Name Last Name</td>
+                            <td>Variation</td>
+                            <td>81%</td>
+                        </tr>
+                        <tr>
+                            <td>First Name Last Name, no Middle Name(s)</td>
+                            <td>Variation</td>
+                            <td>81%</td>
+                        </tr>
+                        <tr>
+                            <td>Aliases</td>
+                            <td>Exact</td>
+                            <td>83%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card effectiveness-per-list">
+                <h3>Effectiveness per list and type</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>List</th>
+                            <th>Addition</th>
+                            <th>Exact</th>
+                            <th>Variation</th>
+                            <th>Replacement</th>
+                            <th>Removal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>EU List</td>
+                            <td>85%</td>
+                            <td>75%</td>
+                            <td>75%</td>
+                            <td>93%</td>
+                            <td>85%</td>
+                        </tr>
+                        <tr>
+                            <td>EU List</td>
+                            <td>N/A</td>
+                            <td>100%</td>
+                            <td>N/A</td>
+                            <td>N/A</td>
+                            <td>N/A</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+<!-- Include AlpineJS for dropdown functionality -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/2.8.0/alpine.js" integrity="sha512-fesPJL9/M3DNNk61HeYFkpgS/W3w5bovEN97Xz5Mtrih+8Wv/TN5QEpZEBZqP/tC1LzJjS1v4/MLA8O+ZGOwtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownButton = document.getElementById('dropdown-button');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+
+        dropdownButton.addEventListener('click', function() {
+            dropdownMenu.classList.toggle('show');
+        });
+    });
+</script>
+</body>
+
+</html>
+
+</html>

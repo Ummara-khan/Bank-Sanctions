@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centered Modal Example</title>
+    <style>
+        /* Basic reset */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Fullscreen background overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 1); /* Solid black background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            display: none; /* Initially hidden */
+        }
+
+        /* Modal container */
+        .modal-content {
+            background-color: #333; /* Dark gray background for the modal */
+            color: #fff; /* White text */
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px; /* Optional: Max width for larger screens */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            position: relative; /* Needed for the close button positioning */
+        }
+
+        /* Close button */
+        .close-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #555; /* Darker border */
+            border-radius: 4px;
+            background-color: #222; /* Slightly darker background for inputs */
+            color: #fff; /* White text inside inputs */
+        }
+
+        .form-control:focus {
+            border-color: #888; /* Light gray border on focus */
+            outline: none;
+        }
+
+        .btn-primary {
+            background-color: #007bff; /* Primary button color */
+            color: #fff; /* White text */
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
+        .btn-secondary {
+            background-color: #6c757d; /* Secondary button color */
+            color: #fff; /* White text */
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268; /* Darker gray on hover */
+        }
+    </style>
+</head>
+<body>
+    <!-- Trigger Button -->
+    <button type="button" onclick="showModal()">Show Modal</button>
+
+    <!-- Overlay and modal content -->
+    <div class="overlay" id="myModal">
+        <div class="modal-content">
+            <!-- Close button -->
+            <button class="close-btn" onclick="closeModal()">×</button>
+            <h2>Edit Variation</h2>
+            <form method="post" action="#">
+                <!-- Fields for variation and score -->
+                <div class="form-group">
+                    <label for="variation" class="form-label">Variation:</label>
+                    <input type="text" id="variation" name="variation" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="score" class="form-label">Score:</label>
+                    <input type="number" id="score" name="score" class="form-control" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Function to show the modal
+        function showModal() {
+            document.getElementById('myModal').style.display = 'flex';
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            document.getElementById('myModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

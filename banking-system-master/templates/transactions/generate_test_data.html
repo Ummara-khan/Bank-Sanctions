@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanctions Management System</title>
+    <!-- Include Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Include Tailwind CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .dropdown-menu {
+            display: none;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .form-container,
+        .table-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-container {
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .table-container {
+            padding: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            flex-basis: 40%;
+        }
+        
+        .form-group input,
+        .form-group select {
+            flex-basis: 55%;
+        }
+        
+        .form-container button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .form-container button:hover {
+            background-color: #0056b3;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+        
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f4f4f4;
+        }
+        
+        .variations-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .variations-table th,
+        .variations-table td {
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .pagination a {
+            margin: 0 5px;
+            text-decoration: none;
+            color: #007bff;
+        }
+        
+        .pagination a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <nav class="flex items-center justify-between flex-wrap bg-gray-800 p-6">
+        <div class="flex items-center flex-shrink-0 text-white mr-6">
+            <a href="/" class="text-white">
+                <i class="fas fa-home text-xl"></i>
+            </a>
+        </div>
+        <div class="block lg:hidden">
+            <button class="flex items-center px-3 py-2 border rounded text-white border-white-400 hover:text-white hover:border-white">
+                <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <title>Menu</title>
+                    <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+                </svg>
+            </button>
+        </div>
+        <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
+            {% if request.user.is_authenticated %}
+            <div class="text-md lg:flex-grow">
+                <a href="{% url 'transactions:list_management' %}" class="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-white mr-4">
+                    Performance Results
+                </a>
+                <a href="{% url 'transactions:list_management' %}" class="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-white mr-4">
+                    Generate Test Data
+                </a>
+                <div class="relative inline-block text-left dropdown">
+                    <button id="dropdown-button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-gray-800 text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                        Watch List Manager
+                        <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M5.293 9.293a1 1 0 011.414 0L10 12.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div id="dropdown-menu" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none dropdown-menu" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                        <div class="py-1" role="none">
+                            <a href="{% url 'transactions:list_management' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">List Management</a>
+                            <a href="{% url 'transactions:records_variations' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Records & Variations</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <a href="{% url 'accounts:user_logout' %}" class="inline-block font-medium text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-800 hover:bg-white mt-4 lg:mt-0">Logout</a>
+            </div>
+            {% else %}
+            <div class="text-md lg:flex-grow"></div>
+            <div>
+                <a href="{% url 'accounts:user_login' %}" class="mr-2 inline-block font-medium text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-800 hover:bg-white mt-4 lg:mt-0">Login</a>
+            </div>
+            <div>
+                <a href="{% url 'accounts:user_registration' %}" class="inline-block font-medium text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-800 hover:bg-white mt-4 lg:mt-0">Register</a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="container">
+        <h1 class="text-2xl font-bold mb-6">Name Variations</h1>
+    
+        <div class="form-container">
+            <form method="get" action="">
+                <fieldset>
+                    <legend class="text-xl font-semibold mb-4">Filters</legend>
+                    <div class="form-group">
+                        <label for="num_entries">Number of Entries to Show:</label>
+                        <input type="number" id="num_entries" name="num_entries" value="{{ request.GET.num_entries }}" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="filter_option">Fields:</label>
+                        <select id="filter_option" name="filter_option">
+                            <option value="">Select Option</option>
+                            <option value="name" {% if request.GET.filter_option == 'name' %}selected{% endif %}>Name</option>
+                            <option value="identity_type" {% if request.GET.filter_option == 'identity_type' %}selected{% endif %}>Identity Type</option>
+                            <option value="country" {% if request.GET.filter_option == 'country' %}selected{% endif %}>Country</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="system_option">System:</label>
+                        <select id="system_option" name="system_option">
+                            <option value="">Swift</option>
+                            <option value="">HotScan</option>
+                            <option value="">FCM</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="test_option">Test for:</label>
+                        <select id="test_option" name="test_option">
+                            <option value="">Customer</option>
+                            <option value="">Transactions</option>
+                        </select>
+                    </div>
+                    <button type="submit" name="generate" value="true">Generate</button>
+                </fieldset>
+            </form>
+        </div>
+    
+        {% if show_data %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Entity Type</th>
+                        <th>Created Date</th>
+                        <th>Variations</th>
+                        <th>Dataset ID</th> <!-- New column header -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if page_obj.object_list %}
+                    {% for item in page_obj.object_list %}
+                    <tr>
+                        <td>{{ item.combined_name }}</td>
+                        <td>{{ item.entity_type }}</td>
+                        <td>{{ item.created_date }}</td>
+                        <td>
+                            <table class="variations-table">
+                                <thead>
+                                    <tr>
+                                        <th>Variation</th>
+                                        <th>Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for variation in item.variations %}
+                                    <tr>
+                                        <td>{{ variation.variation }}</td>
+                                        <td>{{ variation.score }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </td>
+                        <td>{{ item.dataset_id }}</td> <!-- New column data -->
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="5">No records found.</td> <!-- Adjust colspan to match new column -->
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+    
+            <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1&num_entries={{ request.GET.num_entries }}&filter_option={{ request.GET.filter_option }}&filter_value={{ request.GET.filter_value }}&generate=true">&laquo; First</a>
+                        <a href="?page={{ page_obj.previous_page_number }}&num_entries={{ request.GET.num_entries }}&filter_option={{ request.GET.filter_option }}&filter_value={{ request.GET.filter_value }}&generate=true">Previous</a>
+                    {% endif %}
+                    
+                    <span class="current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </span> 
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}&num_entries={{ request.GET.num_entries }}&filter_option={{ request.GET.filter_option }}&filter_value={{ request.GET.filter_value }}&generate=true">Next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}&num_entries={{ request.GET.num_entries }}&filter_option={{ request.GET.filter_option }}&filter_value={{ request.GET.filter_value }}&generate=true">Last &raquo;</a> 
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    </body>
+    </html>
+    

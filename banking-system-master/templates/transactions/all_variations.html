@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Variations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        .variations-table {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .variations-table th, .variations-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination a {
+            margin: 0 5px;
+            text-decoration: none;
+            color: #007bff;
+            padding: 8px 12px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+        }
+        .pagination a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .pagination span {
+            margin: 0 5px;
+            padding: 8px 12px;
+        }
+        .pagination .current {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1> Variations</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th> Name</th>
+                <th>Entity Type</th>
+                <th>Created Date</th>
+                <th>Variations</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in page_obj.object_list %}
+            <tr>
+                <td>{{ item.combined_name }}</td>
+                <td>{{ item.entity_type }}</td>
+                <td>{{ item.created_date }}</td>
+                <td>
+                    <table class="variations-table">
+                        <thead>
+                            <tr>
+                                <th>Variation</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for variation in item.variations %}
+                            <tr>
+                                <td>{{ variation.variation }}</td>
+                                <td>{{ variation.score }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; First</a>
+                <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            {% endif %}
+            
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</body>
+</html>
